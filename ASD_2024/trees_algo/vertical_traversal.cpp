@@ -145,6 +145,37 @@ vector<vector<int>> verticalTraversal(Node* root) {
     return res;
 }
 
+vector<int> verticalTraversal_GeeksForGeeks(Node* root) {
+    queue<pair<Node*, pair<int, int>>> q; 
+    map<int, map<int, vector<int>>> nodes;   
+    vector<int> res;
+    if (root == NULL) return res;
+
+    q.push({root, {0, 0}});
+    while (!q.empty()) {
+        Node* cur_node = q.front().first;
+        int vertical = q.front().second.first;
+        int level = q.front().second.second;
+        q.pop();
+
+        nodes[vertical][level].push_back(cur_node->data);
+        if (cur_node->left != NULL) {
+            q.push({cur_node->left, {vertical - 1, level + 1}});
+        }
+        if (cur_node->right != NULL) {
+            q.push({cur_node->right, {vertical + 1, level + 1}});
+        }
+    }
+
+    for (auto& p : nodes) {
+        for (auto& p2 : p.second) {
+            //Do not Sort, for the GFG problem we have to print the nodes in the same order as they appear in the tree.            
+            res.insert(res.end(), p2.second.begin(), p2.second.end());
+        }
+    }
+    return res;
+}
+
 int main() {
     
     Node* root = newNode(1);
@@ -169,6 +200,12 @@ int main() {
         cout << endl;
     }    
     cout << endl;
+
+    vector<int> resGfG = verticalTraversal_GeeksForGeeks(root);
+    cout << "\nVertical traversal Geek For Geeks: \n";
+    for(int i = 0; i < resGfG.size(); i++){
+        cout << resGfG[i] << " ";
+    }
 
     return 0;
 }
