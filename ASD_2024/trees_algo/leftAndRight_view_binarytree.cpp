@@ -172,6 +172,47 @@ vector<int> rightView(Node *root) {
     return res;
 }
 
+//with preorder traversal
+void leftViewRecursiveHelper(Node * root, int level, vector<int>& res) {   
+    if(root == NULL) return;
+
+    if(level == res.size()){
+        res.push_back(root->data);
+    }
+
+    if(root->left){
+        leftViewRecursiveHelper(root->left, level + 1, res);
+    } 
+    if(root->right){
+        leftViewRecursiveHelper(root->right, level + 1, res);
+    }       
+}
+vector<int> leftViewRecursive(Node * root) {
+    vector<int> res;
+    leftViewRecursiveHelper(root, 0, res);
+    return res;
+}
+
+void rightViewRecursiveHelper(Node * root, int level, vector<int>& res) {
+    if(root == NULL) return;
+
+    if(level == res.size()){
+        res.push_back(root->data);
+    }
+
+    if(root->right){
+        rightViewRecursiveHelper(root->right, level + 1, res);
+    }
+    if(root->left){
+        rightViewRecursiveHelper(root->left, level + 1, res);
+    }       
+}
+vector<int> rightViewRecursive(Node * root) {
+    vector<int> res;
+    rightViewRecursiveHelper(root, 0,res);
+    return res;
+}
+
 int main() {
     
     Node* root = newNode(20);
@@ -196,6 +237,18 @@ int main() {
     cout << "\nright View: \n";
     for(int i = 0; i < res2.size(); i++){
         cout << res2[i] << " ";
+    }
+
+    vector<int> res3 = leftViewRecursive(root);
+    cout << "\nleft View RECURSIVE: \n";
+    for(int i = 0; i < res3.size(); i++){
+        cout << res3[i] << " ";
+    }
+
+    vector<int> res4 = rightViewRecursive(root);
+    cout << "\nright View RECURSIVE: \n";
+    for(int i = 0; i < res4.size(); i++){
+        cout << res4[i] << " ";
     }
 
     return 0;
