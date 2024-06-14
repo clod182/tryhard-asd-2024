@@ -80,10 +80,6 @@ void printTree(PTree root) {
 }
 /*#endregion utilities functions*/
 
-/*#region BALANCE BST---------------------------------------------------------------- */
-
-// to prevent LTE error on leetcode and for large input of queries or unbalanced tree
-// we have first to balance the tree itself and then operate
 void makeArrayInOrderOfBst(TreeNode* root, vector<int>& inorder_input_tree) {
     if(root == nullptr) return;
     makeArrayInOrderOfBst(root->left, inorder_input_tree);
@@ -114,81 +110,39 @@ TreeNode* balanceBST(TreeNode* root) {
 
     return retTree;
 }
-/*#endregion BALANCE BST----------------------------------------------------------------*/
-
-//si potrebbe direttamente andare a lavorare sull'array ordinato e prendere direttamente i valori subito più
-//piccolo e subito più grande di quello in input.  es 2,12,34,42,45,50 --> se input è 27 --> floor = 12, ceil = 34
-vector<int> closestNodesHelper(TreeNode* root, int elem) {
-    vector<int> res(2, -1); 
-    int floor = -1, ceil = -1;
-
-    TreeNode* current = root;
-
-    // Find floor and ceil in a single traversal
-    while (current != nullptr) {
-        if (current->val == elem) {
-            floor = current->val;
-            ceil = current->val;
-            res[0] = floor;
-            res[1] = ceil;
-            return res;
-        }
-        if (elem > current->val) {
-            floor = current->val;
-            current = current->right;
-        } else {
-            ceil = current->val;
-            current = current->left;
-        }
-    }
-
-    res[0] = floor;
-    res[1] = ceil;
-    return res;   
-}
-
-vector<vector<int>> closestNodes(TreeNode* root, vector<int>& queries) {
-    vector<vector<int>> results;
-    if(root == nullptr) return results;
-
-    TreeNode* balancedRoot = balanceBST(root);
-
-    for(auto elem : queries) {
-        vector<int> temp_vect = closestNodesHelper(balancedRoot, elem);
-        results.push_back(temp_vect);
-    }
-
-    return results;
-}
-
-// Main function for testing mixTree
 
 int main() {
-    // Create a BST (root)
-    TreeNode* root = newNode(10);
+    // Create an unbalanced BST
+    PTree root = newNode(10);
     root->left = newNode(5);
-    root->right = newNode(15);
+    root->right = newNode(20);
     root->left->left = newNode(3);
-    root->left->right = newNode(7);
-    root->right->left = newNode(12);
-    root->right->right = newNode(18);
+    root->left->right = newNode(8);
+    root->left->left->left = newNode(2);
+    root->left->left->right = newNode(4);
+    root->left->right->left = newNode(7);
+    root->left->right->right = newNode(9);
+    root->right->left = newNode(15);
+    root->right->right = newNode(25);
+    root->right->left->left = newNode(12);
+    root->right->left->right = newNode(18);
+    root->right->right->left = newNode(22);
+    root->right->right->right = newNode(30);
+    root->right->right->right->right = newNode(35);
+    root->right->right->right->right->right = newNode(40);
 
-    // Print the BST
-    cout << "Tree:\n";
+    // Print the original unbalanced BST
+    cout << "Original Unbalanced Tree:\n";
     printTree(root);
     cout << "\n";
 
-    // Queries
-    vector<int> queries = {4, 9, 10};
+    // Balance the BST
+    PTree balancedRoot = balanceBST(root);
 
-    // Call closestNodes function
-    vector<vector<int>> results = closestNodes(root, queries);
-
-    // Print the results
-    cout << "Closest Nodes Results:\n";
-    for (const auto& result : results) {
-        cout << "[" << result[0] << ", " << result[1] << "]\n";
-    }
+    // Print the balanced BST
+    cout << "Balanced Tree:\n";
+    printTree(balancedRoot);
+    cout << "\n";
 
     return 0;
 }
