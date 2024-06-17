@@ -80,31 +80,48 @@ void printTree(PTree root) {
 }
 /*#endregion utilities functions*/
 
-TreeNode* insertBST(TreeNode* root, int val) {
-        if(root == nullptr) return newNode(val);
-        if(val < root->val && root-> left == nullptr) root->left = newNode(val);
-        else if(val > root->val && root->right == nullptr) root->right = newNode(val);
-        else if(val < root->val) insertBST(root->left, val);
-        else if(val > root->val) insertBST(root->right, val);
-
-        return root;
+TreeNode* findLastRight(TreeNode* root) {
+    if (root == nullptr) return nullptr;
+    if(root->right == nullptr) return root;
+}
+TreeNode* deleteNodeHelper(TreeNode* root) {
+    
 }
 
-TreeNode* insertBSTIterative(TreeNode* root, int val) {
+TreeNode* deleteNode(TreeNode* root, int val) {
+        if(root == nullptr) return root;
         TreeNode* ogRoot = root;
-        while(root != nullptr){
-            if(val < root->val && root-> left == nullptr) {
-                root->left = newNode(val);
-                return ogRoot;
+        while(root != nullptr) {
+            if(root->val == val){
+                if(root->left == nullptr && root->right == nullptr) {
+                    root = nullptr;
+                    break;
+                }
+                else if(root->left == nullptr && root->right!= nullptr) {
+                    root = root->right;
+                    break;
+                }
+                else if(root->left!= nullptr && root->right == nullptr) {
+                    root = root->left;
+                    break;
+                }
+                else {
+                    root = root->left;
+                    TreeNode* curNodeRight = root->right;
+                    while (root->right!= nullptr) {
+                        root = root->right;
+                    }
+                    root->right = curNodeRight;
+                    break;
+                }
             }
-            else if(val > root-> val && root-> right == nullptr) {
-                root->right = newNode(val);
-                return ogRoot;
+            else if(root->val > val) {
+                root = root->left;
             }
-            else if(val < root->val) root = root->left;
-            else if(val > root->val) root = root->right;
+            else{
+                root = root->right;
+            }            
         }
-
         return ogRoot;
 }
 
@@ -119,10 +136,10 @@ int main() {
     cout << "Original Tree:" << endl;
     printTree(root);
 
-    int newValue = 5;
-    root = insertBST(root, newValue);
+    int newValue = 7;
+    root = deleteNode(root, newValue);
 
-    cout << "\nTree after inserting " << newValue << ":" << endl;
+    cout << "\nTree after deleting " << newValue << ":" << endl;
     printTree(root);
 
     return 0;
