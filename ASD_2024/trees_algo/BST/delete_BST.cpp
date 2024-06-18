@@ -87,7 +87,8 @@ TreeNode* findLastRight(TreeNode* root) {
 //decido di operare andando a collegare al "padre" del nodo da eliminare il sottoalbero SX e di collegare al suo ultimo
 //figlio destro il sottoalbero DX
 TreeNode* deleteNodeHelper(TreeNode* root) {
-    if(root->left == nullptr) return root->right; //caso 1
+    if(root == nullptr) return nullptr;
+    else if(root->left == nullptr) return root->right; //caso 1
     else if(root->right == nullptr) return root->left; //caso 2
     //caso 3
     TreeNode* right_child = root->right;
@@ -97,32 +98,32 @@ TreeNode* deleteNodeHelper(TreeNode* root) {
 }
 
 TreeNode* deleteNode(TreeNode* root, int val) {
-        if(root == nullptr) return root;
-        if(root->val == val) return deleteNodeHelper(root);
-        TreeNode* ogRoot = root;
-        while(root != nullptr) {
-            //val < nodo
-            if(val < root->val ) {
-                if(root->left != nullptr && root->left->val == val) {
-                    root->left = deleteNodeHelper(root->left);
-                    break;
-                }
-                else{ //altrimenti continuo a cercare nella parte sinistra
-                    root = root->left;
-                }
+    if(root == nullptr) return root;
+    if(root->val == val) return deleteNodeHelper(root);
+    TreeNode* ogRoot = root;
+    while(root != nullptr) {
+        //val < nodo
+        if(val < root->val ) {
+            if(root->left != nullptr && root->left->val == val) {
+                root->left = deleteNodeHelper(root->left);
+                break;
             }
-            // val > nodo
-            else{
-                if(root->right != nullptr && root->right->val == val) {
-                    root->right = deleteNodeHelper(root->left);
-                    break;
-                }
-                else{ //altrimenti continuo a cercare nella parte destra
-                    root = root->right;
-                }
-            }     
+            else{ //altrimenti continuo a cercare nella parte sinistra
+                root = root->left;
+            }
         }
-        return ogRoot;
+        // val > nodo
+        else{
+            if(root->right != nullptr && root->right->val == val) {
+                root->right = deleteNodeHelper(root->right);
+                break;
+            }
+            else{ //altrimenti continuo a cercare nella parte destra
+                root = root->right;
+            }
+        }     
+    }
+    return ogRoot;
 }
 
 int main() {
