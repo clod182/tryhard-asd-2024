@@ -80,19 +80,36 @@ void printTree(PTree root) {
 }
 /*#endregion utilities functions*/
 
-TreeNode* bstFromPreorder(vector<int>& preorder) {
-    if(preorder.size() == 0) return nullptr;
-    TreeNode* ret = newNode(preorder[0]);
+void bstFromPreorderHelper(vector<int>& preorder, TreeNode*& root, int& position, int limit) {
+    if(preorder[position] > limit || position >= preorder.size()) return;
+    root = new TreeNode(preorder[position]);
+    position++;
 
+    if(position < preorder.size() && preorder[position] < root->val) {        
+        bstFromPreorderHelper(preorder, root->left, position, root->val);
+    }
+    
+    if(position < preorder.size() && preorder[position] > root->val &&  preorder[position] < limit) {
+        bstFromPreorderHelper(preorder, root->right, position, limit);
+    }
 }
 
-int main() {    
+TreeNode* bstFromPreorder(vector<int>& preorder) {
+    if(preorder.size() == 0) return nullptr;
+    TreeNode* ret = nullptr;
+    int position = 0;
+    bstFromPreorderHelper(preorder, ret, position, INT_MAX);
+
+    return ret;
+}
+
+int main() {
 
     std::vector<int> preorder = {8, 5, 1, 7, 10, 12};   
+    //std::vector<int> preorder = {4, 2};   
     TreeNode* root = bstFromPreorder(preorder);
 
-    std::cout << "Inorder Traversal of the Constructed BST:" << std::endl;
-    inorderTraversal(root);
+    std::cout << "Inorder Traversal of the Constructed BST:" << std::endl;    
     printTree(root);
 
     return 0;
