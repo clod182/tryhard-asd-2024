@@ -129,6 +129,28 @@ void findPreSuc(TreeNode* root, TreeNode*& pre, TreeNode*& suc, int key) {
     findPreSuc(root->right, pre, suc, key);
 }
 
+void findPreSucSmarter(TreeNode* root, TreeNode*& pre, TreeNode*& suc, int key) {
+    if(root == nullptr) return;
+
+    if(root->val < key){
+        if(pre == nullptr || root->val > pre->val){
+            pre = root;
+        }
+        findPreSucSmarter(root->left, pre, suc, key);        
+    }
+
+    else if(root->val > key){
+        if(suc == nullptr || root->val < suc->val){
+            suc = root;
+        }
+        findPreSucSmarter(root->right, pre, suc, key);
+    }
+
+    else{
+        return;
+    }
+}
+
 int main() {
     TreeNode* root = new TreeNode(50);
     root->left = new TreeNode(30);
@@ -143,7 +165,8 @@ int main() {
     TreeNode* pre = nullptr;
     TreeNode* suc = nullptr;
 
-    findPreSuc(root, pre, suc, key);
+    findPreSucSmarter(root, pre, suc, key);
+    //findPreSuc(root, pre, suc, key);
 
     if (pre != nullptr) {
         cout << "Predecessor: " << pre->val << endl;
