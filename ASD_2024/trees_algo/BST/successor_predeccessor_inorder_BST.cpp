@@ -86,17 +86,6 @@ void printTree(PTree root) {
 
 //in-order visit, qundi il primo valore che trovo maggiore di key è il mio successor, l'ultimo valore più
 //piccolo che trovo rispetto a key è il mio predecessor
-
-TreeNode* findNextInOrder(TreeNode* root) {
-    if(root == nullptr) return nullptr;
-    
-    if(root->left != nullptr) return findNextInOrder (root->left);    
-
-    else if(root != nullptr) return root;    
-
-    else return findNextInOrder (root->right);
-}
-
 void findPreSuc(TreeNode* root, TreeNode*& pre, TreeNode*& suc, int key) {
     if(root == nullptr) return;
 
@@ -136,18 +125,49 @@ void findPreSucSmarter(TreeNode* root, TreeNode*& pre, TreeNode*& suc, int key) 
         if(pre == nullptr || root->val > pre->val){
             pre = root;
         }
-        findPreSucSmarter(root->left, pre, suc, key);        
+               
     }
+    findPreSucSmarter(root->left, pre, suc, key); 
 
-    else if(root->val > key){
+    if(root->val > key){
         if(suc == nullptr || root->val < suc->val){
             suc = root;
         }
-        findPreSucSmarter(root->right, pre, suc, key);
+        
     }
+    findPreSucSmarter(root->right, pre, suc, key);
+    
+    return;
+    
+}
 
-    else{
-        return;
+//---------------------------------------------------------------- best solution
+//le altre 2 T= O(N), questa O(log N) per alberi bilanciati
+void findPreSucOptimized(TreeNode* root, TreeNode*& pre, TreeNode*& suc, int key) {
+    while (root != nullptr) {
+        if (root->val < key) {
+            pre = root;
+            root = root->right;
+        } else if (root->val > key) {
+            suc = root;
+            root = root->left;
+        } else {
+            if (root->left != nullptr) {
+                TreeNode* temp = root->left;
+                while (temp->right != nullptr) {
+                    temp = temp->right;
+                }
+                pre = temp;
+            }
+            if (root->right != nullptr) {
+                TreeNode* temp = root->right;
+                while (temp->left != nullptr) {
+                    temp = temp->left;
+                }
+                suc = temp;
+            }
+            break;
+        }
     }
 }
 
@@ -158,6 +178,7 @@ int main() {
     root->left->left = new TreeNode(20);
     root->left->right = new TreeNode(40);
     root->right->left = new TreeNode(60);
+    root->right->left->left = new TreeNode(59);
     root->right->right = new TreeNode(80);
 
     int key = 60;
