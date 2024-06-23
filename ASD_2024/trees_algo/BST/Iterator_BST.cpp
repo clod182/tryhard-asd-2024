@@ -88,21 +88,28 @@ private:
     stack<TreeNode*> st;
 public:
     BSTIterator(TreeNode* root) {
-        while(root->left != nullptr){
+        while(root != nullptr){
             st.push(root);
-            root = root->left;
+            root = root->left;          
         }
     }
     
     int next() {
+        if(st.empty()){
+            return -1;
+        }
         TreeNode* cur = st.top();
         int ret = cur->val;
         st.pop();
 
-        if(st.size() == 1){
-            TreeNode* cur_only_node = st.top();
-            BSTIterator(cur_only_node);
+        if(cur->right != nullptr){
+            cur= cur->right;
+            while(cur != nullptr){
+                st.push(cur);
+                cur = cur->left;          
+            }
         }
+        return ret;
     }
     
     bool hasNext() {
@@ -112,32 +119,40 @@ public:
 
 int main() {
     // Manually create the BST
-    TreeNode* root = new TreeNode(50);
-    root->left = new TreeNode(30);
-    root->right = new TreeNode(70);
-    root->left->left = new TreeNode(20);
-    root->left->right = new TreeNode(40);
-    root->right->left = new TreeNode(60);
-    root->right->left->left = new TreeNode(59);
-    root->right->right = new TreeNode(80);
+    TreeNode* root = new TreeNode(7);
+    root->left = new TreeNode(3);
+    root->right = new TreeNode(15);
+    root->right->left = new TreeNode(9);
+    root->right->right = new TreeNode(20);
 
-    // Test BSTIterator
+    // Instantiate the BSTIterator
     BSTIterator bSTIterator(root);
+    
+    // Perform the sequence of operations and print the results
+    cout << bSTIterator.next() << endl;    // return 3
+    cout << bSTIterator.next() << endl;    // return 7
+    
+    bool next = bSTIterator.hasNext(); // return true
+    if(next) cout << "True" << endl;
+    else cout << "False" << endl;
+
+    cout << bSTIterator.next() << endl;    // return 9
+    
+    next = bSTIterator.hasNext(); // return true
+    if(next) cout << "True" << endl;
+    else cout << "False" << endl;
+
+    cout << bSTIterator.next() << endl;    // return 15
+    
+    next = bSTIterator.hasNext(); // return true
+    if(next) cout << "True" << endl;
+    else cout << "False" << endl;
+
     cout << bSTIterator.next() << endl;    // return 20
-    cout << bSTIterator.next() << endl;    // return 30
-    cout << bSTIterator.hasNext() << endl; // return true
-    cout << bSTIterator.next() << endl;    // return 40
-    cout << bSTIterator.hasNext() << endl; // return true
-    cout << bSTIterator.next() << endl;    // return 50
-    cout << bSTIterator.hasNext() << endl; // return true
-    cout << bSTIterator.next() << endl;    // return 59
-    cout << bSTIterator.hasNext() << endl; // return true
-    cout << bSTIterator.next() << endl;    // return 60
-    cout << bSTIterator.hasNext() << endl; // return true
-    cout << bSTIterator.next() << endl;    // return 70
-    cout << bSTIterator.hasNext() << endl; // return true
-    cout << bSTIterator.next() << endl;    // return 80
-    cout << bSTIterator.hasNext() << endl; // return false
+    
+    next = bSTIterator.hasNext(); // return false
+    if(next) cout << "True" << endl;
+    else cout << "False" << endl;
 
     return 0;
 }

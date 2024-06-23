@@ -181,7 +181,7 @@ int main() {
     root->right->left->left = new TreeNode(59);
     root->right->right = new TreeNode(80);
 
-    int key = 60;
+    int key = 10;
 
     TreeNode* pre = nullptr;
     TreeNode* suc = nullptr;
