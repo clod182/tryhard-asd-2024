@@ -98,8 +98,8 @@ bool findTargetBruteForce(TreeNode* root, int k) {
     makeArrayInOrderOfBst(root, inorder_input_tree);
     int start = 0;
     int end = inorder_input_tree.size() - 1;
-    //basta anche solo     while (start < end)
-    while(root!= nullptr && start < inorder_input_tree.size() && end >= 0 && start < end) {
+    
+    while(start < end) {
         if(inorder_input_tree[start] + inorder_input_tree[end] == k) return true;
         else if(inorder_input_tree[start] + inorder_input_tree[end] < k) start++;
         else end--;
@@ -124,7 +124,7 @@ public:
 
         while(ogRoot != nullptr){
             st_before.push(ogRoot);
-            ogRoot = root->right;          
+            ogRoot = ogRoot->right;          
         }
     }
     
@@ -174,7 +174,25 @@ public:
 };
 
 bool findTarget(TreeNode* root, int k) {
+    if(root == nullptr) return false;
 
+    BSTIterator iterator = BSTIterator(root);
+    if(iterator.hasNext() && iterator.hasBefore()) {
+        int next = iterator.next();
+        int before = iterator.before();
+        while(next < before) {
+            if(next + before == k) {
+                return true;
+            }
+            else if(next + before < k) {
+                next = iterator.next();
+            }
+            else {
+                before = iterator.before();
+            }
+        }
+    }
+    return false;
 }
 
 int main() {
@@ -187,7 +205,8 @@ int main() {
     root1->right->right = new TreeNode(7);
 
     int k1 = 9;
-    cout << "Example 1: " << (findTargetBruteForce(root1, k1) ? "true" : "false") << endl; // Output: true
+    cout << "Example 1: " << (findTarget(root1, k1) ? "true" : "false") << endl; // Output: true
+    //cout << "Example 1: " << (findTargetBruteForce(root1, k1) ? "true" : "false") << endl; // Output: true
 
     // Create the binary search tree for the second example
     TreeNode* root2 = new TreeNode(5);
@@ -198,7 +217,8 @@ int main() {
     root2->right->right = new TreeNode(7);
 
     int k2 = 28;
-    cout << "Example 2: " << (findTargetBruteForce(root2, k2) ? "true" : "false") << endl; // Output: false
+    cout << "Example 2: " << (findTarget(root2, k2) ? "true" : "false") << endl; // Output: false
+    //cout << "Example 2: " << (findTargetBruteForce(root2, k2) ? "true" : "false") << endl; // Output: false
 
     return 0;
 }
