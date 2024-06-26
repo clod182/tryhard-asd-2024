@@ -80,8 +80,41 @@ void printTree(PTree root) {
 }
 /*#endregion utilities functions*/
 
-int maxSumBST(TreeNode* root) {
+class NodeValue{
+public:
+    int maxNode, minNode, sum;
 
+    NodeValue(int minNode, int maxNode, int sum) {
+        this->minNode = minNode;
+        this->maxNode = maxNode;
+        this->sum = sum;
+    }
+};
+
+//dobbiano essere sicuri che quando siamo nel nodo corrente radice, il sottoalbero destro e quello sinistro 
+//siano gà stati computati. Quindi dobbiamo seguire una visita post-order
+NodeValue maxSumBSTHelper(TreeNode* root, int& maxSum) {
+    if (root == nullptr) return NodeValue(INT_MAX, INT_MIN, 0);
+
+    auto left = maxSumBSTHelper(root->left, maxSum);
+    auto right = maxSumBSTHelper(root->right, maxSum);
+
+    //POST we do some business
+    //condition to check if we have a BST
+    if (left.maxNode < root->val && root->val < right.minNode) {
+        int curSum = root->val + left.sum + right.sum;
+        maxSum = max(maxSum, curSum);
+        return NodeValue(min(root->val, left.minNode), max(root->val, right.maxNode), curSum);
+    } else {
+        // Return invalid BST
+        return NodeValue(INT_MIN, INT_MAX, max(left.sum, right.sum));
+    }
+}
+
+int maxSumBST(TreeNode* root) {
+    int maxSum = 0;
+    maxSumBSTHelper(root, maxSum);
+    return maxSum;
 }
 
 int main() {

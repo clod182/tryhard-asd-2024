@@ -79,21 +79,43 @@ void printTree(PTree root) {
     }
 }
 /*#endregion utilities functions*/
-//dobbiano essere sicuri che quando siamo nel nodo corrente radice, il sottoaalbero destro e quello sinistro 
-//siano gà stati computati. Quindi dobbiamo seguire una visita post-order
-int largestBSTHelper(TreeNode* root, int& count, int& smallest, int& largest) {
-    if(root == nullptr) return -1;
 
-    int left = largestBSTHelper(root->left, largestLeft, largestRight);
-    int right = largestBSTHelper(root->right, largestLeft, largestRight);
-    
+class NodeValue {
+public:
+    int maxNode, minNode, size;
+    bool isBST;
+
+    NodeValue(int minNode, int maxNode, int size, bool isBST) {
+        this->minNode = minNode;
+        this->maxNode = maxNode;
+        this->size = size;
+        this->isBST = isBST;
+    }
+};
+
+//dobbiano essere sicuri che quando siamo nel nodo corrente radice, il sottoalbero destro e quello sinistro 
+//siano gà stati computati. Quindi dobbiamo seguire una visita post-order
+NodeValue largestBSTHelper(TreeNode* root, int& max_size) {
+    if(root == nullptr) return NodeValue(INT_MAX, INT_MIN, 0, true);
+
+    NodeValue left = largestBSTHelper(root->left, max_size);
+    NodeValue right = largestBSTHelper(root->right, max_size);
+
+    // Condition to check if we have a BST
+    if(left.isBST && right.isBST && left.maxNode < root->val && root->val < right.minNode) {
+        // It's a BST
+        int cur_size = 1 + left.size + right.size;
+        max_size = max(max_size, cur_size);
+        return NodeValue(min(root->val, left.minNode), max(root->val, right.maxNode), cur_size, true);
+    }    
+    // Not a BST
+    return NodeValue(INT_MIN, INT_MAX, max(left.size, right.size), false);    
 }
 
-int largestBST(TreeNode* root) {
-    int largestLeft = -1;
-    int largestRight = -1;
-
-    largestBSTHelper(root, largestLeft, largestRight);
+int largestBST(TreeNode* root) {    
+    int max_size = 0;
+    largestBSTHelper(root, max_size);
+    return max_size;
 }
 
 int main() {
@@ -108,6 +130,7 @@ int main() {
     root1->right->right->left = new TreeNode(4);
     root1->right->right->right = new TreeNode(6);
 
+    printTree(root1);
     cout << "largest BST in tree 1: " << largestBST(root1) << endl; 
 
     // Test case 2
@@ -116,6 +139,7 @@ int main() {
     root2->left->left = new TreeNode(1);
     root2->left->right = new TreeNode(2);
 
+    printTree(root2);
     cout << "largest BST in tree 2: " << largestBST(root2) << endl; 
 
     // Test case 3
@@ -123,6 +147,7 @@ int main() {
     root3->left = new TreeNode(-2);
     root3->right = new TreeNode(-5);
 
+    printTree(root3);
     cout << "largest BST in tree 3: " << largestBST(root3) << endl; 
 
     // Additional large test case
@@ -136,6 +161,7 @@ int main() {
     root4->left->left->left = new TreeNode(1);
     root4->right->left->left = new TreeNode(6);
 
+    printTree(root4);
     cout << "largest BST in tree 4: " << largestBST(root4) << endl; 
 
     return 0;
