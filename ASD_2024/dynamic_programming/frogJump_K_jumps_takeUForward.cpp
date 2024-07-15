@@ -46,7 +46,7 @@ int frogJumpKJumps1(int n, vector<int> &heights, int k)
 }
 
 //---------------------------------------------------------------- MEMONIZATION top-down
-int frogJumpKJumpsHelper(int n, vector<int> &heights, int k, vector<int> &dp)
+int frogJumpKJumpsHelper2(int n, vector<int> &heights, int k, vector<int> &dp)
   {
     if (dp[n] != -1) return dp[n];
     if (n == 0) return 0;  // Base case: we're at the start
@@ -55,7 +55,7 @@ int frogJumpKJumpsHelper(int n, vector<int> &heights, int k, vector<int> &dp)
     
     for(int i=1; i <= k; i++){
         if(n-i >= 0){
-            int option =  frogJumpKJumpsHelper(n-i, heights, k, dp) + abs(heights[n] - heights[n-i]);
+            int option =  frogJumpKJumpsHelper2(n-i, heights, k, dp) + abs(heights[n] - heights[n-i]);
             bestOption = min(bestOption, option);
         }        
     }    
@@ -64,16 +64,38 @@ int frogJumpKJumpsHelper(int n, vector<int> &heights, int k, vector<int> &dp)
     return bestOption;
 }
 
-int frogJumpKJumps(int n, vector<int> &heights, int k)
+int frogJumpKJumps2(int n, vector<int> &heights, int k)
 {
     vector<int> dp(n + 1, -1);
-    return frogJumpKJumpsHelper(n-1, heights, k, dp);
+    return frogJumpKJumpsHelper2(n-1, heights, k, dp);
 }
 
 //---------------------------------------------------------------- TABULATION bottom-up
+int frogJumpKJumps(int n, vector<int> &heights, int k)
+{
+    vector<int> dp(n + 1, -1);
 
+    dp[0] = 0;    
+
+    for(int i = 1; i<n; i++){
+        int bestOption = INT_MAX;
+        for(int j=1; j <= k; j++){
+            if(i-j >= 0 ){// se il salto è possibile
+                //int option =  frogJumpKJumpsHelper2(n-i, heights, k, dp) + abs(heights[n] - heights[n-i]);
+                int option =  dp[i - j] + abs(heights[i] - heights[i - j]);
+                bestOption = min(bestOption, option);                
+            }         
+        }
+        dp[i] = bestOption;      
+    }
+
+    return dp[n-1];
+}
 
 //---------------------------------------------------------------- SPACE OPTIMIZATION
+// in questo problema non ha senso perchè non si avrebbe un reale space optimization, si potrebbe fare con la tecnica dello
+//sliding windows per passare da O(n) a O(k)
+
 
 
 int main() {
