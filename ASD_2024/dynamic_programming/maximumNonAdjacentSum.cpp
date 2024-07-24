@@ -41,22 +41,26 @@ int maximumNonAdjacentSum1(vector<int> &nums){
 
 
 //---------------------------------------------------------------- TABULATION bottom-up
+
 int maximumNonAdjacentSum(vector<int> &nums){
     int n = nums.size();
-    vector<int> dp(n + 1, -1);
-    return maximumNonAdjacentSumHelper1(n-1, nums, dp);
-}
+    vector<int> dp(n, 0);
+    if(n <= 0) return 0;
 
-int maximumNonAdjacentSumHelper(int n, vector<int> &nums, vector<int> &dp){     
-    if (n == 0) return nums[n];
-    if (n < 0) return 0;
-    if (dp[n] != -1) return dp[n];
+    dp[0] = nums[0];
+    int negative = 0; //sarebbe l'altro base case
+    
+    for(int i = 1; i < n; i++){
+        int pick = nums[i];
+        if(i>i)  {
+            pick += dp[i - 2];
+        }
+        int not_pick = 0 + dp[i-1];
 
-    int pick = nums[n] + maximumNonAdjacentSumHelper(n-2, nums, dp);
-    int not_pick = 0 + maximumNonAdjacentSumHelper(n-1, nums, dp);
+        dp[i] = max(pick, not_pick);
+    }
 
-    dp[n] = max(pick, not_pick);
-    return dp[n];
+    return dp[n-1];
 }
 
 int main() {
@@ -83,7 +87,7 @@ int main() {
 
     // Test case 4: All negative numbers
     vector<int> nums4 = {-2, -1, -4, -9};
-    int expected4 = 0;
+    int expected4 = -1;
     int result4 = maximumNonAdjacentSum(nums4);
     cout << "Test case 4: " << (result4 == expected4 ? "PASSED" : "XXXXXXXXX - FAILED") << endl;
     cout << "Expected: " << expected4 << ", Got: " << result4 << endl << endl;
