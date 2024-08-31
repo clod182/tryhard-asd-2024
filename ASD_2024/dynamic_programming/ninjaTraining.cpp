@@ -64,13 +64,25 @@ int ninjaTraining1(int n, vector<vector<int>> &points)
 }
 
 //---------------------------------------------------------------- TABULATION bottom-up
-int ninjaTraining1(int n, vector<vector<int>> &points)
+int ninjaTraining(int n, vector<vector<int>> &points)
 {
     int n_activity = points[0].size();
-    vector<vector<int>> dp(n, vector<int>(n_activity+1, -1));
+    vector<vector<int>> dp(n, vector<int>(n_activity+1, 0));
     int prevAct = n_activity;
 
-    return ninjaTrainingHelper1(n-1, prevAct, points, dp);
+    dp[0][0] = points[0][0];
+    dp[0][1] = points[0][1];
+    dp[0][2] = points[0][2];
+
+    for(int day = 1; day < n; day++){
+        for(int act = 0; act < n_activity; act++){
+
+        }
+    }
+
+    //INCOMPLETO, DA CAPIRE MEGLIO IL CONCETTO IN VIDEO
+
+    return dp[n][]
 }
 
 int main() {
