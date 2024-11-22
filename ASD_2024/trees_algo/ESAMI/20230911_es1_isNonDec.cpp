@@ -96,8 +96,20 @@ void printTree(PNodeG root) {
 
 /*#endregion utilities functions*/
 
+bool checkNotDecSiblings(PNodeG r){
+    if(r == nullptr) return true;
+
+    if(r->rightSib && (r->rightSib->key < r->key)){
+        return false;
+    }
+
+    return checkNotDecSiblings(r->rightSib);    
+}
+
 bool isNonDec(PNodeG r){
-    
+    if(r == nullptr) return true;
+
+    return checkNotDecSiblings(r) && isNonDec(r->rightSib) && isNonDec(r->leftChild);    
 }
 
 int main() {
