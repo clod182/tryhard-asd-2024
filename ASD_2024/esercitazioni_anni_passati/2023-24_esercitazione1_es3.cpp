@@ -14,6 +14,8 @@ Il prototipo della funzione è:
 PNode ricostruisci(const vector<int>& va, const vector<int>& vs)
 */
 
+/*#region utilities functions*/
+
 // Struttura del nodo
 struct Node {
     int key;
@@ -41,6 +43,9 @@ void stampaPreOrder(PNode root) {
     stampaPreOrder(root->left);
     stampaPreOrder(root->right);
 }
+
+/*#endregion utilities functions*/
+
 
 /*
 Il primo elemento di va (preorder) è sempre la radice.

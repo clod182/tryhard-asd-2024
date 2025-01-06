@@ -53,22 +53,20 @@ bool isNonDec(PNodeG r);
 
 
 // Implementazione della funzione: da completare
-bool isNonDec(PNodeG r){
-    if(r == nullptr) return true;
-    if(r->left_child == nullptr && r->right_sib == nullptr) return true;
-    PNodeG prev = r->left_child;
-    if(r->left_child && r->left_child->right_sib){
-        PNodeG cur = r->left_child->right_sib;
-        while(cur && prev){
-            if(prev->key <= cur->key){
-                prev = cur;
-                cur = cur->right_sib;
-            }
-            else return false;
-        }    
-    }     
+bool isNonDec(PNodeG r) {
+    if (r == nullptr) return true;
     
-    return (isNonDec(r->left_child) && isNonDec(r->right_sib));    
+    // Controlla la proprietà per i figli del nodo corrente
+    PNodeG child = r->left_child;
+    while (child && child->right_sib) {
+        if (child->key > child->right_sib->key) {
+            return false;
+        }
+        child = child->right_sib;
+    }
+    
+    // Ricorsione sui figli e fratelli
+    return isNonDec(r->left_child) && isNonDec(r->right_sib);
 }
 
 int main() {
