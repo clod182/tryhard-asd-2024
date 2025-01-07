@@ -90,22 +90,42 @@ void inorderTraversal(PNode root) {
 
 /*#endregion utilities functions*/
 
+void creaBSTIntervalHelper(PNode sourceRoot, int k, int ogRotVal, PTree& retTree) {
+    if (sourceRoot == nullptr) return;
+
+    // Verifica se la chiave è nell'intervallo [ogRotVal, k]
+    if (sourceRoot->key >= ogRotVal && sourceRoot->key <= k) {
+        cout << "Inserisco chiave: " << sourceRoot->key << endl;
+        insert(retTree->root, sourceRoot->key);
+    }
+
+    // Esplora solo il sottoalbero sinistro se la chiave è minore di ogRotVal
+    if (sourceRoot->key > ogRotVal) {
+        creaBSTIntervalHelper(sourceRoot->left, k, ogRotVal, retTree);
+    }    
+    // Esplora solo il sottoalbero destro se la chiave è maggiore di k
+    if (sourceRoot->key < k) {
+        creaBSTIntervalHelper(sourceRoot->right, k, ogRotVal, retTree);
+    }
+}
 // Funzione per creare il nuovo BST con chiavi nell'intervallo [root->key, k]
 PTree creaBSTInterval(PTree t, int k) {
     PTree newTree = new Tree;
     newTree->root = nullptr;
+    int ogRotVal = t->root->key;
+    cout << "ogRotVal: " << ogRotVal << endl;
 
     // Da implementare: Funzione ricorsiva che esplora l'albero e inserisce le chiavi
     // che sono nell'intervallo [t->root->key, k] nel nuovo albero binario di ricerca.
     
-    // Placeholder per la funzione che esplora l'albero.
+    creaBSTIntervalHelper(t->root, k, ogRotVal, newTree);
     
     return newTree;
 }
 
 int main() {
     // Esempio di albero
-    int keys[] = {5, 3, 7, 2, 4, 6, 8};
+    int keys[] = {5, 3, 7, 2, 4, 6, 8, 13, 9};
     int n = sizeof(keys) / sizeof(keys[0]);
 
     PTree tree = createBST(keys, n);
@@ -114,7 +134,7 @@ int main() {
     inorderTraversal(tree->root);
     cout << endl;
 
-    int k = 6; // Chiave di intervallo
+    int k = 10; // Chiave di intervallo
     PTree newTree = creaBSTInterval(tree, k);
 
     cout << "Nuovo albero con chiavi nell'intervallo [root->key, k] (in-order): ";
