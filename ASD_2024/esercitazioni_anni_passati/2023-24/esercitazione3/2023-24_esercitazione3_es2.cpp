@@ -36,30 +36,49 @@ typedef struct{
 Analizzare e motivare in modo chiaro, preciso ed approfondito la complessità della funzione.
 */
 /*#region utilities functions*/
+typedef struct {
+    int value;     // Campo intero per il valore
+    char colour;   // Campo carattere per il colore ('b' o 'n')
+} ValCol;
 
+// Prototipi delle funzioni
+void ordinaPerColore(vector<ValCol>& arr);
+void ordinaPerValore(vector<ValCol>& arr);
+
+// Funzione per stampare il vettore
+void stampaVettore(const vector<ValCol>& arr) {
+    for (const auto& elem : arr) {
+        cout << "(" << elem.value << ", " << elem.colour << ") ";
+    }
+    cout << endl;
+}
 /*#endregion utilities functions*/
 
+void ordinaPerColore(vector<ValCol>& arr){
+    
+}
 
 int main() {
-    // Array di test
-    vector<int> arr = {81, 16, 1, 256, 0, 1296, 625, 4096, 2401};
+    // Test: vettore di esempio
+    vector<ValCol> arr = {
+        {5, 'n'}, {1, 'b'}, {3, 'b'}, {2, 'n'}, {4, 'b'}
+    };
 
-    // Stampa dell'array originale
-    cout << "Array originale: ";
-    for (int num : arr) {
-        cout << num << " ";
-    }
-    cout << endl;
+    // Stampa il vettore originale
+    cout << "Vettore originale:\n";
+    stampaVettore(arr);
 
-    // Chiamata alla funzione di ordinamento
-    order(arr);
+    // Test funzione ordinaPerColore
+    vector<ValCol> arrColore = arr;
+    ordinaPerColore(arrColore);
+    cout << "\nVettore ordinato per colore (b < n):\n";
+    stampaVettore(arrColore);
 
-    // Stampa dell'array ordinato
-    cout << "Array ordinato (non crescente): ";
-    for (int num : arr) {
-        cout << num << " ";
-    }
-    cout << endl;
+    // Test funzione ordinaPerValore
+    vector<ValCol> arrValore = arr;
+    ordinaPerValore(arrValore);
+    cout << "\nVettore ordinato per valore (con b < n per valori uguali):\n";
+    stampaVettore(arrValore);
 
     return 0;
 }
