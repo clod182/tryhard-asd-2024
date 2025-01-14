@@ -58,15 +58,20 @@ int percorso_piu_lungoRic(vector<int>& alture) {
 
 // ---------------------------------------------------------------------   Bottom-up
 
-int percorso_piu_lungoRic(vector<int>& alture) {
+int percorso_piu_lungo(vector<int>& alture) {
     int n = alture.size();
-    vector<int> dp(n, -1); // Vettore per memorizzare i risultati parziali
+    vector<int> dp(n, 1); // Vettore per memorizzare la lunghezza del percorso che termina in ciascun punto
 
-    int maxLength = 0;
+    int maxLength = 1;
     
     // Calcoliamo la lunghezza massima del percorso per ogni punto i
-    for (int i = 0; i < n; ++i) {
-        maxLength = max(maxLength, percorso_piu_lungoHelper(alture, dp, i));
+    for (int i = 1; i < n; ++i) {
+        for (int j = 0; j < i; ++j) {
+            if (alture[j] >= alture[i]) {
+                dp[i] = max(dp[i], dp[j] + 1);  // Estendiamo il percorso se possibile
+            }
+        }
+        maxLength = max(maxLength, dp[i]);  // Manteniamo traccia del percorso massimo
     }
 
     return maxLength;
