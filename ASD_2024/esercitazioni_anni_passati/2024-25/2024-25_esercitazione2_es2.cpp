@@ -43,19 +43,50 @@ stampa, maxBST, minBST e mergeBST.
 //------------------------main function
 // 1) Stampa in forma strutturata l'albero rappresentato dal vettore
 //    Es: livello per livello con indentazione
-void stampa(const vector<int>& arr);
+//in sostanza è una stampa in order
+void stampaAux(const vector<int>& arr, int i){
+    if(i >= arr.size()) return;
+    stampaAux(arr, 2 * i + 1);  // sinistro
+    cout << arr[i] << " ";          // radice
+    stampaAux(arr, 2 * i + 2);  // destro
+}
+
+void stampa(const vector<int>& arr){
+    int i=0;
+    stampaAux(arr, i);
+}
 
 // 2) Restituisce il massimo elemento di arr in modo efficiente
 template<typename T>
-int maxBST(const vector<T>& arr);
+int maxBST(const vector<T>& arr){
+    int dim = arr.size();
+    int i=0;
+    while(i*2+2 < dim){
+        i = i*2+2;
+    }
+    return arr[i];
+}
 
 // 3) Restituisce il minimo elemento di arr in modo efficiente
 template<typename T>
-int minBST(const vector<T>& arr);
+int minBST(const vector<T>& arr){
+    int dim = arr.size();
+    int i=0;
+    while(i*2+1 < dim){
+        i = i*2+1;
+    }
+    return arr[i];
+}
 
 // 4) Fusione di due BST completi arr1, arr2 con tutti i valori di arr1 < k < arr2
 //    Restituisce il vettore che rappresenta il BST completo ottenuto
-vector<int> mergeBST(const vector<int>& arr1, const vector<int>& arr2, int k);
+vector<int> mergeBST(const vector<int>& arr1, const vector<int>& arr2, int k){
+    if(arr1.size() <= 0 && arr2.size() <= 0 ) return arr1;
+    if(arr1.size() <= 0) return arr2;
+    if(arr2.size() <= 0) return arr1;
+
+    
+}
 
 // Funzioni di utilità per creare esempi
 vector<int> buildSampleBST1() {
