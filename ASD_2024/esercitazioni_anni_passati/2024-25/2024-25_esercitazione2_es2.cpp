@@ -80,12 +80,39 @@ int minBST(const vector<T>& arr){
 
 // 4) Fusione di due BST completi arr1, arr2 con tutti i valori di arr1 < k < arr2
 //    Restituisce il vettore che rappresenta il BST completo ottenuto
-vector<int> mergeBST(const vector<int>& arr1, const vector<int>& arr2, int k){
+vector<int> mergeBST(const vector<int>& arr1, const vector<int>& arr2, int val){
     if(arr1.size() <= 0 && arr2.size() <= 0 ) return arr1;
     if(arr1.size() <= 0) return arr2;
     if(arr2.size() <= 0) return arr1;
 
+    vector<int> ris;
+    ris.push_back(val);  // val è la nuova radice
     
+    /*
+    -sx: indice per scorrere arr1 (sottoalbero sinistro).
+    -dx: indice per scorrere arr2 (sottoalbero destro).
+    -j: numero di elementi da prendere da ciascun array a ogni livello dell’albero 
+    (parte con 1, cioè i figli diretti della radice).
+    */
+    int sx = 0, j = 1, dx = 0;
+    while(sx < arr1.size()){
+        //Calcola la fine del livello corrente in arr1 (si suppone che a ogni livello ci siano j nodi).
+        int end = sx+j;
+
+        while (sx < end) {
+            ris.push_back(arr1[sx]);
+            sx++;
+        }
+
+        while (dx < end) {
+            ris.push_back(arr2[dx]);
+            dx++;
+        }
+
+        j *= 2;
+
+    }
+    return ris;
 }
 
 // Funzioni di utilità per creare esempi
