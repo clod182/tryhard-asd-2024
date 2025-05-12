@@ -33,12 +33,27 @@ Si devono scrivere eventuali funzioni/procedure ausiliarie utilizzate.
 bool stesseOccorrenze(vector<int>& arr){
     if(arr.size() <= 1) return false;
 
-    std::unordered_map<int, int> ricMap;
+    unordered_map<int, int> ricMap;
     int dim = arr.size();
     for(int i=0; i<dim; i++){
         ricMap[arr[i]] += 1;
     }
+
+    unordered_map<int, int> freq_counter;
+    for (auto& entry : ricMap) {
+        int freq = entry.second;
+        // Incremento il contatore per questa frequenza
+        freq_counter[freq] = freq_counter[freq] + 1;
+
+        // Se ora il contatore è maggiore di 1, vuol dire che la frequenza era già stata vista
+        if (freq_counter[freq] > 1) {
+            return true;
+        }
+    }    
+
+    return false; // tutte le frequenze sono uniche
 }
+
 bool stesseOccorrenzeValoriDistintiCostanti(vector<int>& arr){
     return false;
 }
