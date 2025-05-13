@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <climits>
+#include <unordered_set>
 
 using namespace std;
 
@@ -30,7 +31,7 @@ Si devono scrivere eventuali funzioni/procedure ausiliarie utilizzate.
 
 
 //------------------------main function
-bool stesseOccorrenze(vector<int>& arr){
+bool stesseOccorrenze(vector<int>& arr){ //COMPLESSITA' O(n)
     if(arr.size() <= 1) return false;
 
     unordered_map<int, int> ricMap;
@@ -39,22 +40,48 @@ bool stesseOccorrenze(vector<int>& arr){
         ricMap[arr[i]] += 1;
     }
 
-    unordered_map<int, int> freq_counter;
-    for (auto& entry : ricMap) {
-        int freq = entry.second;
-        // Incremento il contatore per questa frequenza
-        freq_counter[freq] = freq_counter[freq] + 1;
+    unordered_set<int> freqSeen;
+    for (auto elem : ricMap) {
+        int freq = elem.second;
 
-        // Se ora il contatore è maggiore di 1, vuol dire che la frequenza era già stata vista
-        if (freq_counter[freq] > 1) {
+        if (freqSeen.count(freq)) {
+            // Questa frequenza è già stata vista
             return true;
         }
-    }    
-
+        freqSeen.insert(freq);
+    }
     return false; // tutte le frequenze sono uniche
 }
 
-bool stesseOccorrenzeValoriDistintiCostanti(vector<int>& arr){
+bool stesseOccorrenzeValoriDistintiCostanti(vector<int>& arr){ //COMPLESSITA' O(n * c) = O(n)
+    if(arr.size() <= 1) return false;
+
+    vector<pair<int, int>> conteggi; // in questo esercizio è GARANTITO ci siano al massimo c elementi distinti 
+    int dim = arr.size();
+    for(int i=0; i<dim; i++){
+        bool find = false;
+        int dimConteggi = conteggi.size();
+        for(int j=0; j<dimConteggi; j++){
+            if(conteggi[j].first == arr[i]){
+                ++conteggi[j].second;
+                find = true;
+                break; //una volta trovato il valore val, ho già aggiornato il conteggio, 
+                       //e non ha senso continuare a scorrere il resto del vettore
+            }
+        }
+        if(find == false){
+            conteggi.push_back({arr[i], 1});
+        }
+    }
+
+    int dimConteggi = conteggi.size();
+    for(int i=0; i<dimConteggi; i++){
+        for(int j=i+1; j<dimConteggi; j++){ //i+1 per non confrontare ogni elem con se stesso, 
+                                            //e una volta confrontato un elemento con tutti gli altri, non c'è più bisogno di farlo
+            if(conteggi[i].second == conteggi[j].second) return true;
+        }
+    }
+
     return false;
 }
 
@@ -63,7 +90,7 @@ int main() {
     vector<int> test2 = {1, 2, 3, 4, 5};    // false: ogni elemento è unico
     vector<int> test3 = {1, 1, 2, 2, 3, 3}; // true: tutti occorrono 2 volte
     vector<int> test4 = {7, 8, 8, 9, 9, 9}; // false: occorrenze diverse
-    vector<int> test5 = {};                // false: nessun elemento
+    vector<int> test5 = {};                 // false: nessun elemento
 
     cout << boolalpha;
 
