@@ -1,0 +1,236 @@
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+
+using namespace std;
+
+/* TESTO
+ESERCIZIO 5
+Fornire un’implementazione per il tipo di dato Dizionario il cui insieme di operazioni `e specificato nel file dizionario.hpp, 
+utilizzando una tabella Hash con indirizzamento aperto di dimensione m = 13 e doppio Hashing basato sulle funzioni h1(k) = k modm e h2(k) = 1 + (k mod(m − 2)).
+
+Per ciascuna operazione specificare la complessità (caso pessimo e caso medio) e completare il tipo Elem in modo da rendere le operazioni il più efficienti possibili.
+Si crei un dizionario e si devono eseguire le seguenti operazioni:
+
+1. inserimento della sequenza di chiavi: 42, 16, 7, 85
+2. cancellazione: 42
+3. ricerca: 85
+4. inserimento: 29
+
+*/
+
+/*#region utilities functions*/
+
+/*#endregion utilities functions*/
+
+//------------------------helper function
+
+//------------------------main function
+// ==============================
+// Parametri globali hash
+// ==============================
+constexpr int hashsize = 13;   // dimensione tabella hash
+constexpr int hashaux = 11;    // m - 2 usato per h2(k)
+
+// ==============================
+// Elemento del dizionario
+// ==============================
+struct Elem {
+    int key;     // chiave
+    int info;    // valore associato
+    int index;   // posizione nella tabella per facilitare la cancellazione
+};
+typedef Elem* PElem;
+
+// ==============================
+// Classe Dizionario con PImpl
+// ==============================
+class Dizionario {
+public:
+    Dizionario();                         // costruttore
+    ~Dizionario();                        // distruttore
+    void inserisci(int k, int val);       // inserisce chiave k con valore val
+    void cancella(PElem e);               // cancella l'elemento
+    PElem cerca(int k);                   // cerca chiave k
+    int numChiavi();                      // numero di chiavi inserite
+    int leggiChiave(PElem e);             // legge la chiave di un elemento
+    int leggiInfo(PElem e);               // legge il valore associato
+    void stampa();                        // stampa tabella
+
+private:
+    struct Impl {
+        vector<PElem> content;            // vettore di puntatori agli elementi
+        int numchiavi;                    // numero di chiavi correnti
+        PElem DEL;                        // puntatore speciale per slot cancellati
+    };
+    Impl* pimpl;
+};
+
+// ==============================
+// Funzione di doppio hashing
+// ==============================
+// h(k, i) = (h1(k) + i * h2(k)) % m
+// h1(k) = k % m
+// h2(k) = 1 + (k % (m-2))
+// Complessità: O(1)
+int funHash(int val, int i) {
+    return (val % hashsize + i * (1 + (val % hashaux))) % hashsize;
+}
+
+// ==============================
+// Costruttore
+// ==============================
+// post: crea dizionario vuoto
+Dizionario::Dizionario() {
+    pimpl = new Impl;
+    pimpl->numchiavi = 0;
+    pimpl->DEL = new Elem{-1, -1, -1}; // segnaposto per slot cancellati
+    for (int i = 0; i < hashsize; i++)
+        pimpl->content.push_back(nullptr);
+}
+
+// ==============================
+// Distruttore
+// ==============================
+// post: dealloca tutta la memoria
+Dizionario::~Dizionario() {
+    for (int i = 0; i < hashsize; i++)
+        if (pimpl->content[i] != nullptr && pimpl->content[i] != pimpl->DEL)
+            delete pimpl->content[i];
+    delete pimpl->DEL;
+    delete pimpl;
+}
+
+// ==============================
+// Inserimento
+// ==============================
+// pre: chiave k non presente
+// post: inserisce (k, val) nel dizionario
+// Complessità: O(1) medio, O(m) pessimo
+void Dizionario::inserisci(int k, int val) {
+    int index, i = 0;
+    bool ok = false;
+
+    do {
+        index = funHash(k, i);
+        if (pimpl->content[index] == nullptr || pimpl->content[index] == pimpl->DEL) {
+            pimpl->content[index] = new Elem{k, val, index};
+            ok = true;
+        } else {
+            i++;
+        }
+    } while (i < hashsize && !ok);
+
+    if (ok)
+        pimpl->numchiavi++;
+    else
+        cout << "Tabella piena\n";
+}
+
+// ==============================
+// Cancellazione
+// ==============================
+// pre: l'elemento esiste
+// post: lo rimuove marcandolo come cancellato
+// Complessità: O(1) medio, O(m) pessimo
+void Dizionario::cancella(PElem x) {
+    pimpl->content[x->index] = pimpl->DEL;
+    delete x;
+    pimpl->numchiavi--;
+}
+
+// ==============================
+// Ricerca
+// ==============================
+// post: restituisce elemento con chiave k, nullptr se non trovato
+// Complessità: O(1) medio, O(m) pessimo
+PElem Dizionario::cerca(int k) {
+    int index, i = 0;
+    bool trovato = false;
+
+    do {
+        index = funHash(k, i);
+        if (pimpl->content[index] == nullptr)
+            break; // non troveremo mai la chiave
+        if (pimpl->content[index] != pimpl->DEL &&
+            pimpl->content[index]->key == k) {
+            trovato = true;
+        } else {
+            i++;
+        }
+    } while (i < hashsize && !trovato);
+
+    return trovato ? pimpl->content[index] : nullptr;
+}
+
+// ==============================
+// Numero di chiavi
+// ==============================
+// post: restituisce quante chiavi sono presenti
+int Dizionario::numChiavi() {
+    return pimpl->numchiavi;
+}
+
+// ==============================
+// Lettura chiave
+// ==============================
+int Dizionario::leggiChiave(PElem x) {
+    return x->key;
+}
+
+// ==============================
+// Lettura informazione
+// ==============================
+int Dizionario::leggiInfo(PElem x) {
+    return x->info;
+}
+
+// ==============================
+// Stampa dizionario
+// ==============================
+// post: stampa ogni slot della tabella
+void Dizionario::stampa() {
+    for (int i = 0; i < hashsize; i++) {
+        cout << "tab[" << i << "] = ";
+        if (pimpl->content[i] == nullptr)
+            cout << "vuoto\n";
+        else if (pimpl->content[i] == pimpl->DEL)
+            cout << "cancellata\n";
+        else
+            cout << "(" << pimpl->content[i]->key << "," << pimpl->content[i]->info << ")\n";
+    }
+}
+
+// ==============================
+// MAIN: test richiesto
+// ==============================
+int main() {
+    Dizionario dict;
+
+    // 1. Inserimenti
+    dict.inserisci(42, 1);
+    dict.inserisci(16, 1);
+    dict.inserisci(7, 1);
+    dict.inserisci(85, 1);
+
+    // 2. Cancellazione
+    PElem elem = dict.cerca(42);
+    if (elem)
+        dict.cancella(elem);
+
+    // 3. Ricerca
+    elem = dict.cerca(85);
+    if (elem)
+        cout << "Valore Trovato\n";
+    else
+        cout << "Nessun valore\n";
+
+    // 4. Inserimento
+    dict.inserisci(29, 1);
+
+    // 5. Stampa finale
+    dict.stampa();
+
+    return 0;
+}
