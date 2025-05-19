@@ -75,16 +75,32 @@ PNode Tree::figlioDx(PNode u) const {
 }
 
 // Calcola e restituisce il padre di u (non è memorizzato)
-PNode Tree::padre(PNode u) const {
-    PNode y = u;
-    while (y->right != nullptr)
-        y = y->right;
-    PNode z = y->succ;
-    PNode iter = (z == nullptr) ? root : z->left;
-    if (iter == u) return z;
-    while (iter->right != u)
-        iter = iter->right;
-    return iter;
+// Restituisce il padre del nodo target (u), senza usare un puntatore al padre.
+// Utilizza solo root, left, right e succ.
+PNode Tree::padre(PNode target) const {
+    // Step 1: Trova il massimo nodo nel sottoalbero radicato in target
+    PNode maxInSubtree = target;
+    while (maxInSubtree->right != nullptr)
+        maxInSubtree = maxInSubtree->right;
+
+    // Step 2: Trova il successore in-order del massimo del sottoalbero
+    PNode successorOfMax = maxInSubtree->succ;
+
+    // Step 3: Determina il punto di rientro nel sottoalbero
+    // Se il successore non esiste (cioè target è il massimo dell'intero albero),
+    // si parte dalla radice. Altrimenti, si parte dal ramo sinistro del successore.
+    PNode potentialParent = (successorOfMax == nullptr) ? root : successorOfMax->left;
+
+    // Caso particolare: se il figlio sinistro del successore è proprio target,
+    // allora il successore stesso è il padre.
+    if (potentialParent == target)
+        return successorOfMax;
+
+    // Step 4: Altrimenti, seguiamo il cammino a destra fino a trovare il nodo che ha target come figlio destro.
+    while (potentialParent->right != target)
+        potentialParent = potentialParent->right;
+
+    return potentialParent;  // Trovato il padre vero
 }
 
 // Restituisce il successore in-order di u (memorizzato)
@@ -92,17 +108,23 @@ PNode Tree::treesucc(PNode u) const {
     return u->succ;
 }
 
-// Restituisce il predecessore in-order di u
-PNode Tree::treepred(PNode u) const {
-    if (u->left != nullptr)
-        return treemax(u->left);
-    PNode y = padre(u);
-    while (y != nullptr && y->left == u) {
-        u = y;
-        y = padre(y);
+// Restituisce il predecessore in-order del nodo current
+PNode Tree::treepred(PNode current) const {
+    // Caso 1: se esiste un sottoalbero sinistro, il predecessore è il massimo di quel sottoalbero
+    if (current->left != nullptr)
+        return treemax(current->left);
+
+    // Caso 2: non ha figlio sinistro → risaliamo verso il padre finché il nodo corrente è figlio sinistro
+    PNode ancestor = padre(current); // troviamo il primo antenato
+    while (ancestor != nullptr && ancestor->left == current) {
+        current = ancestor;               // risaliamo l'albero
+        ancestor = padre(ancestor);       // aggiorniamo l'antenato
     }
-    return y;
+
+    // Se abbiamo trovato un nodo da cui siamo figli destri, è il predecessore
+    return ancestor;
 }
+
 
 // Restituisce il minimo del sottoalbero radicato in u
 PNode Tree::treemin(PNode u) const {
