@@ -41,7 +41,7 @@ int percorso_piu_lungoHelper(const vector<int>& alture, vector<int>& dp, int i){
 
 //------------------------main function
 //TOP DOWN
-int percorso_piu_lungo(const vector<int>& alture){
+int percorso_piu_lungo_RICORSIVA(const vector<int>& alture){
     int n = alture.size();
     if( n== 0) return 0;
 
@@ -51,6 +51,33 @@ int percorso_piu_lungo(const vector<int>& alture){
     // Considera tutti i punti come possibili finali
     for(int i=0; i<n; i++){
         maxLength = max(maxLength, percorso_piu_lungoHelper(alture, dp, i));
+    }
+
+    return maxLength;
+}
+
+//BOTTOM UP
+int percorso_piu_lungo(const vector<int>& alture){
+    int n = alture.size();
+    if( n== 0) return 0;
+
+    // dp[i] rappresenta la lunghezza massima del percorso che termina nel punto i
+    vector<int> dp(n, 1);  // inizializzo tutti a 1 (ogni punto da solo forma un percorso valido)
+    int maxLength = 1; // Tiene traccia della lunghezza massima durante l'elaborazione
+
+
+    // Costruisco l'array dp in modo bottom-up
+    for(int i=0; i<n; i++){
+        for(int j=0; j<i; j++){
+            // Se il punto j è raggiungibile da i (cioè alture[i] <= alture[j]),
+            // posso "appendere" i al percorso che termina in j
+            if(alture[i] <= alture[j]){
+                dp[i] = max(dp[i], dp[j] + 1);
+            }
+        }
+        //Alla fine di ogni iterazione su i, il valore dp[i] è completo e corretto: 
+        //rappresenta la lunghezza massima di un percorso che termina in i, tenendo conto di tutti i possibili j < i.
+        maxLength = max(maxLength, dp[i]); 
     }
 
     return maxLength;
