@@ -26,101 +26,103 @@ int percorso_piu_lungo(vector<int>& alture)
 
 /*#endregion utilities functions*/
 
-// ---------------------------------------------------------------------   Ricorsione
-int percorso_piu_lungoHelper(vector<int>& alture, vector<int>& dp, int i) {
+//------------------------helper function
+int percorso_piu_lungoHelper(const vector<int>& alture, vector<int>& dp, int i){
     if(dp[i] != -1) return dp[i];
 
-    int n = alture.size();
-    int maxLength = 1;
-
-    for (int j = i + 1; j < n; ++j) {
-        if(alture[i] <= alture[j]) {
-            maxLength = max(maxLength, 1+percorso_piu_lungoHelper(alture, dp, j));
+    int maxLength = 1; //almeno il punto stesso
+    for(int j=0; j<i; j++){
+        if(alture[i] <= alture[j]){
+            maxLength = max(maxLength, 1+percorso_piu_lungoHelper(alture,dp,j));            
         }
     }
-    
+
     dp[i] = maxLength;
     return dp[i];
 }
-int percorso_piu_lungoRic(vector<int>& alture) {
-    int n = alture.size();
-    vector<int> dp(n, -1); // Vettore per memorizzare i risultati parziali
 
-    int maxLength = 0;
-    
-    // Calcoliamo la lunghezza massima del percorso per ogni punto i
-    for (int i = 0; i < n; ++i) {
+//------------------------main function
+//TOP DOWN
+int percorso_piu_lungo_RICORSIVA(const vector<int>& alture){
+    int n = alture.size();
+    if( n== 0) return 0;
+
+    vector<int> dp(n, -1);
+    int maxLength = 1;
+
+    // Considera tutti i punti come possibili finali
+    for(int i=0; i<n; i++){
         maxLength = max(maxLength, percorso_piu_lungoHelper(alture, dp, i));
     }
 
     return maxLength;
 }
 
-// ---------------------------------------------------------------------   Bottom-up
-
-int percorso_piu_lungo(vector<int>& alture) {
+//BOTTOM UP
+int percorso_piu_lungo(const vector<int>& alture){
     int n = alture.size();
-    vector<int> dp(n, 1); // Vettore per memorizzare la lunghezza del percorso che termina in ciascun punto
+    if( n== 0) return 0;
 
-    int maxLength = 1;
-    
-    // Calcoliamo la lunghezza massima del percorso per ogni punto i
-    for (int i = 1; i < n; ++i) {
-        for (int j = 0; j < i; ++j) {
-            if (alture[j] >= alture[i]) {
-                dp[i] = max(dp[i], dp[j] + 1);  // Estendiamo il percorso se possibile
+    // dp[i] rappresenta la lunghezza massima del percorso che termina nel punto i
+    vector<int> dp(n, 1);  // inizializzo tutti a 1 (ogni punto da solo forma un percorso valido)
+    int maxLength = 1; // Tiene traccia della lunghezza massima durante l'elaborazione
+
+
+    // Costruisco l'array dp in modo bottom-up
+    for(int i=0; i<n; i++){
+        for(int j=0; j<i; j++){
+            // Se il punto j è raggiungibile da i (cioè alture[i] <= alture[j]),
+            // posso "appendere" i al percorso che termina in j
+            if(alture[i] <= alture[j]){
+                dp[i] = max(dp[i], dp[j] + 1);
             }
         }
-        maxLength = max(maxLength, dp[i]);  // Manteniamo traccia del percorso massimo
+        //Alla fine di ogni iterazione su i, il valore dp[i] è completo e corretto: 
+        //rappresenta la lunghezza massima di un percorso che termina in i, tenendo conto di tutti i possibili j < i.
+        maxLength = max(maxLength, dp[i]); 
     }
 
     return maxLength;
 }
 
 int main() {
-    // Esempi di test
+    // Test 1: esempio base decrescente
+    vector<int> test1 = {1000, 800, 600, 400, 200};
+    cout << "Test 1 (decrescente): " << percorso_piu_lungo(test1) << " (atteso: 5)" << endl;
+    assert(percorso_piu_lungo(test1) == 5);
 
-    /*
-    // Caso 1: Vettore di altezze crescente (nessun percorso valido)
-    vector<int> alture1 = {1, 2, 3, 4, 5};
-    cout << "Test 1 (Crescente): " << percorso_piu_lungoRic(alture1) << endl;
+    // Test 2: esempio crescente
+    vector<int> test2 = {100, 200, 300, 400, 500};
+    cout << "Test 2 (crescente): " << percorso_piu_lungo(test2) << " (atteso: 1)" << endl;
+    assert(percorso_piu_lungo(test2) == 1);
 
-    // Caso 2: Vettore di altezze decrescente (il percorso massimo è l'intero vettore)
-    vector<int> alture2 = {5, 4, 3, 2, 1};
-    cout << "Test 2 (Decrescente): " << percorso_piu_lungoRic(alture2) << endl;
+    // Test 3: valori misti
+    vector<int> test3 = {500, 400, 600, 300, 200};
+    // Possibile percorso più lungo: 500 -> 400 -> 300 -> 200 (lunghezza 4)
+    cout << "Test 3 (misto): " << percorso_piu_lungo(test3) << " (atteso: 4)" << endl;
+    assert(percorso_piu_lungo(test3) == 4);
 
-    // Caso 3: Vettore con altezze miste (alcuni punti possono essere parte del percorso)
-    vector<int> alture3 = {1, 3, 2, 4, 1, 5, 0};
-    cout << "Test 3 (Misto): " << percorso_piu_lungoRic(alture3) << endl;
+    // Test 4: tutti uguali
+    vector<int> test4 = {100, 100, 100, 100};
+    cout << "Test 4 (tutti uguali): " << percorso_piu_lungo(test4) << " (atteso: 4)" << endl;
+    assert(percorso_piu_lungo(test4) == 4);
 
-    // Caso 4: Vettore con un solo elemento (la lunghezza massima è 1)
-    vector<int> alture4 = {3};
-    cout << "Test 4 (Singolo): " << percorso_piu_lungoRic(alture4) << endl;
+    // Test 5: solo uno
+    vector<int> test5 = {1200};
+    cout << "Test 5 (uno solo): " << percorso_piu_lungo(test5) << " (atteso: 1)" << endl;
+    assert(percorso_piu_lungo(test5) == 1);
 
-    // Caso 5: Vettore con lunghezza di percorso che include un elemento ripetuto
-    vector<int> alture5 = {2, 3, 2, 2, 1};
-    cout << "Test 5 (Ripetuto): " << percorso_piu_lungoRic(alture5) << endl;
-    */
+    // Test 6: vuoto
+    vector<int> test6 = {};
+    cout << "Test 6 (vuoto): " << percorso_piu_lungo(test6) << " (atteso: 0)" << endl;
+    assert(percorso_piu_lungo(test6) == 0);
 
-    // Caso 1: Vettore di altezze crescente (nessun percorso valido)
-    vector<int> alture1 = {1, 2, 3, 4, 5};
-    cout << "Test 1 (Crescente): " << percorso_piu_lungo(alture1) << endl;
+    // Test 7: alture irregolari
+    vector<int> test7 = {300, 400, 250, 260, 240, 230, 220};
+    // Percorso più lungo: 300 → 250 → 240 → 230 → 220 → lunghezza 5
+    cout << "Test 7 (irregolare): " << percorso_piu_lungo(test7) << " (atteso: 5)" << endl;
+    assert(percorso_piu_lungo(test7) == 5);
 
-    // Caso 2: Vettore di altezze decrescente (il percorso massimo è l'intero vettore)
-    vector<int> alture2 = {5, 4, 3, 2, 1};
-    cout << "Test 2 (Decrescente): " << percorso_piu_lungo(alture2) << endl;
-
-    // Caso 3: Vettore con altezze miste (alcuni punti possono essere parte del percorso)
-    vector<int> alture3 = {1, 3, 2, 4, 1, 5, 0};
-    cout << "Test 3 (Misto): " << percorso_piu_lungo(alture3) << endl;
-
-    // Caso 4: Vettore con un solo elemento (la lunghezza massima è 1)
-    vector<int> alture4 = {3};
-    cout << "Test 4 (Singolo): " << percorso_piu_lungo(alture4) << endl;
-
-    // Caso 5: Vettore con lunghezza di percorso che include un elemento ripetuto
-    vector<int> alture5 = {2, 3, 2, 2, 1};
-    cout << "Test 5 (Ripetuto): " << percorso_piu_lungo(alture5) << endl;
-
+    cout << "Tutti i test superati correttamente!" << endl;
     return 0;
 }
