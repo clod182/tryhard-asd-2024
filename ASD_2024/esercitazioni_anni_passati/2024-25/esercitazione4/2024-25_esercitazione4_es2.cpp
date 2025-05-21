@@ -60,7 +60,7 @@ int lcsClassicBottomUp(const string& s1, const string& s2){ //extra per capire m
 //------------------------helper function
 
 //------------------------main function
-//((TOP-DOWN))
+//((TOP-DOWN)) [***PUNTO 1***]
 int lcsClassicTopDownRicHelper(const string& s1, const string& s2, vector<vector<int>>& dp, int m, int n){
     // Caso base: una delle due stringhe è vuota
     if (m == 0 || n == 0) return 0;
@@ -86,7 +86,7 @@ int lcsClassicTopDownRic(const string& s1, const string& s2){ //extra per capire
     return lcsClassicTopDownRicHelper(s1, s2, dp, m, n);
 }
 
-//((BOTTOM-UP SPACE OPTIMIZATION))
+//((BOTTOM-UP SPACE OPTIMIZATION)) [***PUNTO 2***]
 int lcsOttSpazio(const string& s1, const string& s2){
     // Identifica le due stringhe in modo che 'shorter' sia la più corta.
     const string& shorter = (s1.size() < s2.size()) ? s1 : s2;
@@ -125,8 +125,68 @@ int lcsOttSpazio(const string& s1, const string& s2){
     return dp[m];
 }
 
+//((TOP-DOWN CON LCS EFFETTIVA)) [***PUNTO 3***]
+// Sentinella per indicare celle non ancora calcolate
+static const string SENTINEL = "|";
+// Funzione helper ricorsiva che restituisce la LCS di s1[0..i-1], s2[0..j-1]
+string lcsTopDownSeqHelper(const string& s1, const string& s2, int i, int j, vector<vector<string>>& memo) {
+    // Caso base: se uno dei prefissi è vuoto, LCS = stringa vuota
+    if (i == 0 || j == 0) {        
+        return "";
+    }
+
+    // Se ci siamo già calcolati il risultato, lo riusiamo
+    if (memo[i][j] != SENTINEL) {
+        return memo[i][j];
+    }
+
+    // Se gli ultimi caratteri coincidono...
+    if (s1[i - 1] == s2[j - 1]) {
+        // ...includili nella LCS risultante
+        // prima calcoliamo ricorsivamente la LCS dei prefissi senza quel carattere
+        string prev = lcsTopDownSeqHelper(s1, s2, i - 1, j - 1, memo);
+        // poi concatenamo il carattere corrispondente
+        memo[i][j] = prev + s1[i - 1];
+    } else {
+        // Altrimenti proviamo entrambe le direzioni:
+        // 1) "up" = escludo l'ultimo carattere di s1
+        string up   = lcsTopDownSeqHelper(s1, s2, i - 1, j, memo);
+        // 2) "left" = escludo l'ultimo carattere di s2
+        string left = lcsTopDownSeqHelper(s1, s2, i, j - 1, memo);
+        // Scegliamo la sottosequenza più lunga
+        memo[i][j] = (up.size() >= left.size() ? up : left);
+    }
+
+    // Restituiamo il risultato e lo lasciamo memorizzato in memo[i][j]
+    return memo[i][j];
+}
+
 string lcs(const string& s1, const string& s2){
-    return "wip";
+    int m = s1.size();
+    int n = s2.size();
+
+    // Crea la tabella memo di dimensione (m+1)x(n+1), inizializzata a SENTINEL
+    vector<vector<string>> memo(m + 1, vector<string>(n + 1, SENTINEL));
+
+    // Inizializza le righe e colonne con la stringa vuota (caso base)
+    for (int i = 0; i <= m; ++i) memo[i][0] = "";
+    for (int j = 0; j <= n; ++j) memo[0][j] = "";
+
+    string result = lcsTopDownSeqHelper(s1, s2, m, n, memo);
+
+    // Stampa la tabella per DEBUG
+    /*cout << "Matrice delle LCS parziali:\n";
+    for (int i = 0; i <= m; ++i) {
+        for (int j = 0; j <= n; ++j) {
+            if (memo[i][j] == SENTINEL)
+                cout << "ø\t";  // mai calcolato (in teoria solo memo[0][*] o memo[*][0])
+            else
+                cout << memo[i][j] << "\t";
+        }
+        cout << "\n";
+    }*/
+
+    return result;
 }
 
 
