@@ -15,7 +15,7 @@ b. Determinare la complessità della funzione proposta nel caso migliore e nel c
 La rappresentazione dell’albero binario di ricerca è tramite puntatori e utilizza i tipi PTree e PNode.
 */
 
-/*#region utilities functions*/
+/*#region utilities functions*/ 
 // Nodo dell'albero binario di ricerca
 struct Node {
     int key;
