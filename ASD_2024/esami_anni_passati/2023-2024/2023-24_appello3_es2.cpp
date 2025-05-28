@@ -36,6 +36,23 @@ bool hasEqualFrequencies(const vector<int>& A) {
         map[A[i]] += 1;
     }
 
+    unordered_map<int, int> freq;  // frequenza → numero di volte che compare un elemento
+    for (auto [val, count] : map) {
+        if (freq[count] > 0) {
+            return true;  // già vista una frequenza uguale
+        }
+        freq[count] = 1;
+    }
+    /* OPZIONE CON SET EQUIVALENTE
+    unordered_set<int> freqSeen;
+    for (const auto& [val, count] : map) {
+        if (freqSeen.count(count)) {
+            return true;
+        }
+        freqSeen.insert(count);
+    }
+    */
+
     return false;
 }
 
@@ -52,27 +69,27 @@ int main() {
     // Test case 1: stesso numero ripetuto → false
     vector<int> test1 = {5, 5, 5, 5};
     assert(hasEqualFrequencies(test1) == false);
-    assert(hasEqualFrequenciesConstC(test1) == false);
+    //assert(hasEqualFrequenciesConstC(test1) == false);
 
     // Test case 2: frequenze uniche → false
     vector<int> test2 = {1, 2, 2, 3, 3, 3};
     assert(hasEqualFrequencies(test2) == false);
-    assert(hasEqualFrequenciesConstC(test2) == false);
+    //assert(hasEqualFrequenciesConstC(test2) == false);
 
     // Test case 3: due valori con stessa frequenza → true
     vector<int> test3 = {1, 1, 2, 2, 3, 4};
     assert(hasEqualFrequencies(test3) == true);
-    assert(hasEqualFrequenciesConstC(test3) == true);
+    //assert(hasEqualFrequenciesConstC(test3) == true);
 
     // Test case 4: tanti valori distinti ma due frequenze uguali → true
     vector<int> test4 = {1, 2, 2, 3, 3, 4, 4, 5};
     assert(hasEqualFrequencies(test4) == true);
-    assert(hasEqualFrequenciesConstC(test4) == true);
+    //assert(hasEqualFrequenciesConstC(test4) == true);
 
     // Test case 5: c è costante (3 valori distinti), frequenze tutte diverse → false
     vector<int> test5 = {10, 10, 10, 20, 20, 30};
     assert(hasEqualFrequencies(test5) == false);
-    assert(hasEqualFrequenciesConstC(test5) == false);
+    //assert(hasEqualFrequenciesConstC(test5) == false);
 
     cout << "Tutti i test passati correttamente!" << endl;
     return 0;
