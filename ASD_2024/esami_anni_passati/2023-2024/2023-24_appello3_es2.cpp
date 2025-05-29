@@ -59,7 +59,7 @@ bool hasEqualFrequencies(const vector<int>& A) {
 // --- Parte (b): algoritmo ottimizzato per c costante (pochi valori distinti) ---
 // Restituisce true se esistono almeno due valori distinti con la stessa frequenza
 bool hasEqualFrequenciesConstC(const vector<int>& A) {
-    // TO DO: completa l'implementazione
+    // essendo c costante possiamo permetterci di ordinare un array o di fare confronti con doppi cicli for
     return false;
 }
 
@@ -93,4 +93,46 @@ int main() {
 
     cout << "Tutti i test passati correttamente!" << endl;
     return 0;
+}
+
+#include <iostream>
+#include <vector>
+#include <algorithm> // per std::swap
+
+using namespace std;
+
+// Funzione ricorsiva per mantenere la proprietà di max-heap partendo dal nodo 'i'
+void maxHeapify(vector<int>& vect, int heapSize, int i) {
+    int left = 2 * i + 1;   // indice del figlio sinistro
+    int right = 2 * i + 2;  // indice del figlio destro
+    int max = i;            // inizialmente assumiamo che il nodo corrente sia il più grande
+
+    // Verifica se il figlio sinistro esiste ed è maggiore del nodo corrente
+    if (left < heapSize && vect[left] > vect[max]) {
+        max = left;
+    }
+
+    // Verifica se il figlio destro esiste ed è maggiore del massimo trovato finora
+    if (right < heapSize && vect[right] > vect[max]) {
+        max = right;
+    }
+
+    // Se uno dei figli è maggiore del nodo corrente, scambiamo e ricorriamo
+    if (max != i) {
+        swap(vect[i], vect[max]);
+        // Ripristina la proprietà dell'heap nel sottoalbero che potrebbe essere stato violato
+        maxHeapify(vect, heapSize, max);
+    }
+}
+
+// Costruisce un max-heap partendo da un vettore arbitrario
+void buildMaxHeap(vector<int>& vect) {
+    int heapSize = vect.size();
+
+    // L'ultimo nodo non foglia si trova a indice heapSize / 2 - 1
+    // I nodi da heapSize/2 fino a heapSize-1 sono tutti foglia: già heap per definizione
+    for (int i = heapSize / 2 - 1; i >= 0; i--) {
+        // Ripristina la proprietà di max-heap nel sottoalbero radicato in 'i'
+        maxHeapify(vect, heapSize, i);
+    }
 }
