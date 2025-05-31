@@ -26,7 +26,7 @@ il caso migliore.
 /*
 void insertionSort(int arr[], int n) {
     for (int i = 1; i < n; i++) { //partiamo da 1 perchè Il primo elemento (arr[0]) 
-															    //è già "ordinato" da solo
+								    //è già "ordinato" da solo
         int key = arr[i];
         int j = i - 1;
         
