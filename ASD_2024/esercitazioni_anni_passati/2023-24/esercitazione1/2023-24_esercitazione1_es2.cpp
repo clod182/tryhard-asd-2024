@@ -53,21 +53,28 @@ bool isNonDec(PNodeG r);
 
 
 // Implementazione della funzione: da completare
-bool isNonDec(PNodeG r) {
-    if (r == nullptr) return true;
-    
-    // Controlla la proprietà per i figli del nodo corrente
-    PNodeG child = r->left_child;
-    while (child && child->right_sib) {
-        if (child->key > child->right_sib->key) {
-            return false;
-        }
-        child = child->right_sib;
+bool isNonDec(PNodeG r){
+    if(r == nullptr) return true;
+
+    // Controllo locale: figli in ordine non decrescente
+    PNodeG curNode = r->left_child;
+    int prevVal = INT_MIN;
+    while(curNode){
+        if(curNode->key < prevVal) return false;
+        prevVal = curNode->key;
+        curNode = curNode->right_sib;
     }
-    
-    // Ricorsione sui figli e fratelli
-    return isNonDec(r->left_child) && isNonDec(r->right_sib);
+
+    // Chiamata ricorsiva su tutti i figli (sottoalberi)
+    curNode = r->left_child;
+    while(curNode){
+        if(!isNonDec(curNode)) return false;
+        curNode = curNode->right_sib;
+    }
+
+    return true;
 }
+
 
 int main() {
     // Test 1: Albero vuoto
