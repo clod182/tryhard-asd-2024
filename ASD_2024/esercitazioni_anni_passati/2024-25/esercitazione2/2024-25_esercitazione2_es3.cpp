@@ -22,17 +22,108 @@ int libriSelezionati(vector<int>& prezzolibri, double soldi, vector<pair<int,int
 La funzione restituisce la dimensione dell’array ris. Si devono scrivere eventuali funzioni/procedure ausiliari utilizzate.
 */
 
-/*#region utilities functions*/
-
-/*#endregion utilities functions*/
-
-//------------------------helper function
-
-//------------------------main function
-int libriSelezionati(vector<int>& prezzolibri, double soldi, vector<pair<int, int>>& ris){
-
+// Funzione ausiliaria per il merge
+void merge(vector<int>& arr, int left, int mid, int right) {
+    // Calcola le dimensioni dei due sottoarray
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+    
+    // Crea array temporanei
+    vector<int> leftArr(n1);
+    vector<int> rightArr(n2);
+    
+    // Copia i dati negli array temporanei
+    for (int i = 0; i < n1; i++)
+        leftArr[i] = arr[left + i];
+    for (int j = 0; j < n2; j++)
+        rightArr[j] = arr[mid + 1 + j];
+    
+    // Merge dei due array temporanei nell'array originale
+    int i = 0, j = 0, k = left;
+    
+    while (i < n1 && j < n2) {
+        if (leftArr[i] <= rightArr[j]) {
+            arr[k] = leftArr[i];
+            i++;
+        } else {
+            arr[k] = rightArr[j];
+            j++;
+        }
+        k++;
+    }
+    
+    // Copia gli elementi rimanenti di leftArr, se ce ne sono
+    while (i < n1) {
+        arr[k] = leftArr[i];
+        i++;
+        k++;
+    }
+    
+    // Copia gli elementi rimanenti di rightArr, se ce ne sono
+    while (j < n2) {
+        arr[k] = rightArr[j];
+        j++;
+        k++;
+    }
 }
 
+// Funzione ricorsiva per il mergesort
+void mergeSort(vector<int>& arr, int left, int right) {
+    if (left < right) {
+        // Trova il punto medio per dividere l'array in due metà
+        int mid = left + (right - left) / 2;
+        
+        // Ordina ricorsivamente la prima e la seconda metà
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+        
+        // Merge delle due metà ordinate
+        merge(arr, left, mid, right);
+    }
+}
+/*#endregion utilities functions*/
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+//========================================================================
+// APPROCCIO 1: O(n log n) - ORDINAMENTO + DUE PUNTATORI
+//========================================================================
+
+int libriSelezionati(vector<int>& prezzolibri, double soldi, vector<pair<int, int>>& ris) {
+    if (prezzolibri.size() < 2) return 0;
+    
+    // Crea una copia per l'ordinamento (per preservare l'array originale)
+    vector<int> prezzi_ordinati = prezzolibri;
+    
+    // Ordinamento con mergesort implementato manualmente
+    mergeSort(prezzi_ordinati, 0, prezzi_ordinati.size() - 1);
+    
+    int left = 0;
+    int right = prezzi_ordinati.size() - 1;
+    int count = 0;
+    int target = (int)soldi; // Assumiamo che i soldi siano interi per semplicità
+    
+    while (left < right) {
+        int somma = prezzi_ordinati[left] + prezzi_ordinati[right];
+        
+        if (somma == target) {
+            // Trovata una coppia valida
+            ris[count] = {prezzi_ordinati[left], prezzi_ordinati[right]};
+            count++;
+            left++;
+            right--;
+        }
+        else if (somma < target) {
+            // Somma troppo piccola, aumenta il puntatore sinistro
+            left++;
+        }
+        else {
+            // Somma troppo grande, diminuisci il puntatore destro
+            right--;
+        }
+    }
+    
+    return count;
+}
 
 int main() {
     // Test 1: caso base, c'è una coppia valida
