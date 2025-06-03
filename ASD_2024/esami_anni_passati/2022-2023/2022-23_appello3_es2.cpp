@@ -11,14 +11,31 @@ lezione (e nel libro di testo). Sia H2 un vettore di lunghezza n contenente un m
 secondo lo schema visto a lezione (e nel libro di testo). Si consideri il problema di trasformare il vettore H1 in un
 vettore ordinato contenente tutti gli elementi degli heap H1 ed H2, senza allocare altri vettori ausiliari.
 
-a. Fornire un algoritmo efficiente per risolvere il problema proposto utilizzando, tra le procedure viste a lezione, solamente max-heapify.
+a. Fornire un algoritmo efficiente in c++ per risolvere il problema proposto utilizzando, tra le procedure viste a lezione, solamente max-heapify.
 
 b. Determinarne e giustificare la complessità.
 
 */
 
 /*#region utilities functions*/
-void maxHeapify(){
+void maxHeapify(vector<int>& vect, int i, int heapSize){
+
+    int left = i*2+1;
+    int right = i*2+2;
+    
+    int max = i;
+    if (left < heapSize && vect[left] > vect[max]){
+        max = left;
+    }
+
+    if (right < heapSize && vect[right] > vect[max]){
+        max = right;
+    }
+
+    if(max != i){
+        swap(vect[i], vect[max]);
+        maxHeapify(vect, max, heapSize);
+    }
 
 }
 
@@ -26,9 +43,28 @@ void maxHeapify(){
 
 //----------------------------------------------------------------------------------------------------------------------------------------
 void merge_and_sort_heaps(vector<int>& H1, const vector<int>& H2){
-
+    int n = H2.size();
+// PASSO 1: Copia H2 nella seconda metà di H1
+    for (int i = 0; i < n; i++) {
+        H1[n + i] = H2[i];
+    }
+    
+    // PASSO 2: Ricostruisci l'heap di dimensione 2n
+    // Applica max-heapify dal penultimo livello verso l'alto
+    for (int i = n - 1; i >= 0; i--) {
+        maxHeapify(H1, i, 2 * n);
+    }
+    
+    // PASSO 3: Heapsort - estrai ripetutamente il massimo
+    for (int heapSize = 2 * n; heapSize > 1; heapSize--) {
+        // Il massimo è sempre in H1[0]
+        // Scambialo con l'ultimo elemento dell'heap
+        swap(H1[0], H1[heapSize - 1]);
+        
+        // Ripristina la proprietà di heap per i primi heapSize-1 elementi
+        maxHeapify(H1, 0, heapSize - 1);
+    }
 }
-
 
 //---------------------------------------------------------------------------------------------------------------------------------------- TEST MAIN
 // Funzione di supporto per stampare un vettore
