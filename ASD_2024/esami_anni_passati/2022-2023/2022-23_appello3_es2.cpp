@@ -44,7 +44,7 @@ void maxHeapify(vector<int>& vect, int i, int heapSize){
 //----------------------------------------------------------------------------------------------------------------------------------------
 void merge_and_sort_heaps(vector<int>& H1, const vector<int>& H2){
     int n = H2.size();
-// PASSO 1: Copia H2 nella seconda metà di H1
+    // PASSO 1: Copia H2 nella seconda metà di H1
     for (int i = 0; i < n; i++) {
         H1[n + i] = H2[i];
     }
