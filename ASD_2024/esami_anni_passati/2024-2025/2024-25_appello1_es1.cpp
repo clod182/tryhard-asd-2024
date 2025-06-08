@@ -80,9 +80,9 @@ int main() {
             Struttura:
                      5
                    / | \
-                 3  2  4
-                /      \
-               1        2
+                 3   2  4
+                /        \
+               1          2
 
             Percorsi:
             - Nodo 3: subtree=4, path=5 → no

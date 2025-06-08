@@ -128,7 +128,7 @@ int libriSelezionati(vector<int>& prezzolibri, double soldi, vector<pair<int, in
     }
     
     return count;
-} 
+}
 
 //========================================================================
 // APPROCCIO 2: O(n) - HASH MAP
