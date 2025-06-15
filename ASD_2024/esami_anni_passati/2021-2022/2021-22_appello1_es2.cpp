@@ -81,8 +81,7 @@ int longestPalindromeSubstr(const string& s) {
     }
     return countMax;
 }
-//TOP-DOWN ********************************************************************************************
-//BOTTOM-UP
+//BOTTOM-UP ********************************************************************************************
 int longestPalindromeSubstrBOTTOMUP(const string& s) {
     int n = s.length();
     if (n == 0) return 0;
@@ -107,9 +106,13 @@ int longestPalindromeSubstrBOTTOMUP(const string& s) {
     // FASE 3: Controlla palindromi di lunghezza 3 e oltre
     // CHIAVE: Procediamo per lunghezze crescenti
     for (int length = 3; length <= n; length++) {
+        // Scorriamo tutte le possibili sottostringhe di questa lunghezza
         for (int i = 0; i <= n - length; i++) {
             int j = i + length - 1;
             
+            // Condizione per essere palindroma:
+            // 1) estremi uguali
+            // 2) la parte interna (i+1..j-1) è già palindroma
             if (s[i] == s[j] && dp[i + 1][j - 1]) {
                 dp[i][j] = true;
                 maxLength = length;
