@@ -43,8 +43,8 @@ int percorso_piu_lungo_helper1(vector<int>& alture, int index, vector<int>& dp) 
 
     int max_length = 1; // Include il punto corrente
 
-    for (int i = index + 1; i < alture.size(); i++) {
-        if (alture[i] <= alture[index]) {
+    for (int i = index + 1; i < alture.size(); i++) { // se forse percorso che arriva (e non parte da) a bisogna fare
+        if (alture[i] <= alture[index]) {             // int i = 0; i < index; i++
             int length = 1 + percorso_piu_lungo_helper1(alture, i, dp);
             max_length = max(max_length, length);
         }

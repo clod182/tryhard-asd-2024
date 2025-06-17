@@ -20,9 +20,70 @@ b. Valutare e giustificare la complessità della procedura proposta.
 /*#endregion utilities functions*/
 
 //----------------------------------------------------------------------------------------------------------------------------------------
-void ordina_mod3(vector<int>& A){
-    
+void ordina_mod3(vector<int>& A) {
+    int n = A.size();
+    vector<int> B(n);  // spazio temporaneo
+
+    int index = 0;
+
+    // Copia tutti quelli con mod 0
+    for (int i = 0; i < n; ++i) {
+        if (A[i] % 3 == 0) {
+            B[index++] = A[i];
+        }
+    }
+
+    // Copia tutti quelli con mod 1
+    for (int i = 0; i < n; ++i) {
+        if (A[i] % 3 == 1) {
+            B[index++] = A[i];
+        }
+    }
+
+    // Copia tutti quelli con mod 2
+    for (int i = 0; i < n; ++i) {
+        if (A[i] % 3 == 2) {
+            B[index++] = A[i];
+        }
+    }
+
+    // Riscrivi il contenuto ordinato in A
+    for (int i = 0; i < n; ++i) {
+        A[i] = B[i];
+    }
 }
+
+//modo alternativo -----------------------------------------------------
+void ordina_mod3ALT(vector<int>& A) {
+    int n = A.size();
+    if (n <= 1) return;
+    
+    // Contiamo gli elementi per ogni resto (0, 1, 2)
+    int count[3] = {0, 0, 0};
+    for (int i = 0; i < n; i++) {
+        count[A[i] % 3]++;
+    }
+    
+    // Calcoliamo le posizioni di partenza per ogni gruppo
+    int pos[3];
+    pos[0] = 0;                    // elementi con resto 0 iniziano da posizione 0
+    pos[1] = count[0];             // elementi con resto 1 iniziano dopo quelli con resto 0
+    pos[2] = count[0] + count[1];  // elementi con resto 2 iniziano dopo 0 e 1
+    
+    // Creiamo un vettore ausiliario per il risultato
+    vector<int> result(n);
+    
+    // Distribuiamo gli elementi nel vettore risultato
+    for (int i = 0; i < n; i++) {
+        int resto = A[i] % 3;
+        result[pos[resto]] = A[i];
+        pos[resto]++;
+    }
+    
+    // Copiamo il risultato nel vettore originale
+    A = result;
+}
+
 
 //---------------------------------------------------------------------------------------------------------------------------------------- 
 //TEST MAIN
